@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Comment
 
 
 # Register your models here.
@@ -15,8 +15,14 @@ class PostAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
 
 
-# Shell commands for navigating through the database
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ["name", "email", "post", "created", "active"]
+    list_filter = ["active", "created"]
+    search_fields = ["name", "email", "body"]
 
+
+# Shell commands for navigating through the database.
 # Leveraging on filter commands.
 # Filtering the exact match
 # Post.objects.filter(title__contains='Django') returns titles with the word Django and is not case sensitive.
