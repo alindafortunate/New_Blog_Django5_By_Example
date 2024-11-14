@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     # Third-party apps
     "taggit",
     # Local apps
