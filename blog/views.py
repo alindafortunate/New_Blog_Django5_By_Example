@@ -1,4 +1,5 @@
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Count
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.mail import send_mail
@@ -151,16 +152,17 @@ def post_search(request):
         if form.is_valid():
             query = form.cleaned_data["query"]
             # config="english" helps to eliminate the English stop words.
-            search_vector = SearchVector(
-                "title", weight="A", config="english"
-            ) + SearchVector("body", weight="A", config="english")
-            search_query = SearchQuery(query, config="english")
+
+            # search_vector = SearchVector(
+            #     "title", weight="A", config="english"
+            # ) + SearchVector("body", weight="A", config="english")
+            # search_query = SearchQuery(query, config="english")
+
+            # Now applying trigram similarity
             results = (
-                Post.published.annotate(
-                    search=search_vector, rank=SearchRank(search_vector, search_query)
-                )
-                .filter(rank__gte=0.3)
-                .order_by("-rank")
+                Post.published.annotate(similarity=TrigramSimilarity("title", query))
+                .filter(similarity__gt=0.1)
+                .order_by("-similarity")
             )
     return render(
         request,
